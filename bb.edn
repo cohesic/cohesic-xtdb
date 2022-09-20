@@ -1,0 +1,7 @@
+{:paths ["scripts"]
+ :deps {}
+ :min-bb-version "0.4.0"
+ :tasks
+ {clean (shell "rm -rf target")
+  test (clojure "-M:test" "--fail-fast" "unit")
+  test-watch (clojure "-M:test" "--fail-fast" "--watch" "unit")}}

@@ -1,0 +1,34 @@
+= Cohesic XTDB Helpers
+
+== Intro
+
+These are functions our team needed for supporting our core use cases. They extend the XTDB api and are currently used in production.
+
+TIP: Use link:https://github.com/asciidoctor/asciidoctor-browser-extension[Asciidoctor browser extension] to view `.adoc` raw files as html in your browser.
+
+== Release Information
+
+https://clojure.org/reference/deps_and_cli[deps.edn] dependency information:
+
+```clojure
+com.cohesic/xtdb {:git/url "https://github.com/cohesic/cohesic-xtdb.git"
+                  :sha     "<insert-latest-sha>"}
+```
+
+At the moment this library only supports the https://clojure.org/guides/deps_and_cli#_using_git_libraries[git library] method (Clojars deployment is planned).
+
+== Features
+
+- https://docs.xtdb.com/language-reference/datalog-transactions/#operations[Transaction operations] predicates
+- Transformations from https://docs.xtdb.com/language-reference/datalog-queries/#history-api[history] items to transaction operations
+- Attribute extracting functions (i.e. `start-valid-time`) for transaction operations
+- Functions that compute the reverse an entity before a specific time
+- Helpers for computing and submitting `::xt/match` operations alongside their `::xt/put` for an entity
+
+== Usage
+
+We use https://book.babashka.org/#tasks[Babashka Tasks], run `bb tasks` for more details.
+
+== Copyright & License
+
+This software is available under the MIT license. See the LICENSE file for more info.
