@@ -22,7 +22,7 @@ At the moment this library only supports the https://clojure.org/guides/deps_and
 - https://docs.xtdb.com/language-reference/datalog-transactions/#operations[Transaction operations] predicates
 - Transformations from https://docs.xtdb.com/language-reference/datalog-queries/#history-api[history] items to transaction operations
 - Attribute extracting functions (i.e. `start-valid-time`) for transaction operations
-- Functions that compute the reverse an entity before a specific time
+- Functions that xref:docs/entity-revert.adoc[revert an entity] before a specific time
 - Helpers for computing and submitting `::xt/match` operations alongside their `::xt/put` for an entity
 
 == Usage

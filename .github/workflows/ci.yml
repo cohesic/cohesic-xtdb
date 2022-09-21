@@ -1,9 +1,10 @@
 name: CI
 
 on:
-  - push
-  - pull_request
-  - workflow_dispatch
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
 
 env:
   CLOJURE_CLI_VERSION: "1.11.1.1165"
@@ -61,3 +62,20 @@ jobs:
 
       - name: Run tests
         run: bb test
+
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: asciidoctor-ghpages
+      uses: manoelcampos/asciidoctor-ghpages-action@v2.2.4
+      with:
+        pdf_build: true
+        source_dir: docs/
+        ebook_main_adoc_file: index
+        # asciidoctor_params: --attribute=nofooter
+        # slides_build: true
+        # pre_build:
+        # post_build:
