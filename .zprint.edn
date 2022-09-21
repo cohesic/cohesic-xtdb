@@ -1,0 +1,34 @@
+{:width 100
+ :style [:community :how-to-ns :binding-nl]
+ :map {:comma? false :sort? false}
+ :comment {:inline-align-style :none}
+ :fn-map
+ {"def" [:arg1-body {:vector {:wrap-coll? false}}]
+  "defn" [:arg1-body
+          {:next-inner {:map
+                        {:force-nl? true :sort-in-code? false :sort? true :key-order [:pre :post]}
+                        :next-inner {:map {:force-nl? false}}}}]
+  "cond->" [:arg1-pair-body {:pair {:indent 0 :nl-separator? true}}]
+  "cond" [:pair-fn {:pair {:indent 0 :nl-separator? true} :pair-fn {:hang? false}}]
+  "try" :flow-body
+  "as->" [:arg2 {:fn-force-nl #{:arg2} :next-inner {:remove {:fn-force-nl #{:arg2}}}}]
+  "deftest" :arg1-body
+  "testing" [:arg1-body {:list {:respect-nl? true}}]
+  "extend" :arg1-extend
+  "comment" [:flow-body {:list {:respect-nl? true}}]
+  "extend-type" [:arg1-extend
+                 {:extend {:indent 0} :list {:indent-arg 2} :fn-map {:default :force-nl-body}}]
+  ;; remove when next release is out
+  ;; https://github.com/kkinnear/zprint/issues/176
+  "defrecord" [:arg2-extend {:list {:indent-arg 2} :next-inner {:list {:indent-arg 1}}}]
+  "defprotocol" [:arg1-force-nl
+                 {:style :defprotocolguide
+                  :fn-map {:default :flow}
+                  :list {:indent-arg 2 :constant-pair? false}
+                  :next-inner {:list {:indent-arg 1}}}]
+  "with-meta" :flow-body
+  ;; clojure spec
+  "s/alt" :noarg1-body
+  "warn-keys" [:none {:vector {:fn-format :flow} :vector-fn {:constant-pair? false :indent 1}}]
+  "s/keys" [:none {:vector {:fn-format :flow} :vector-fn {:constant-pair? false :indent 1}}]
+  "with-instrument-disabled" :flow-body}}

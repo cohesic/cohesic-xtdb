@@ -1,0 +1,6 @@
+{:skip-comments true
+ :linters {:unused-namespace {:level :error}
+           :unused-import {:level :error}
+           :unused-referred-var {:level :error}
+           :unsorted-required-namespaces {:level :error}
+           :missing-docstring {:level :off}}}

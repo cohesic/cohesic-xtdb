@@ -57,14 +57,10 @@ This version of the function is memoized."
     {:start-valid-time java.util.Date
      :end-valid-time   java.util.Date}"
   [history-item & {:keys [start-valid-time end-valid-time]}]
-  (let
-    [doc
-     (doto (::xt/doc history-item)
-      (assert
-       (str "The input history item does not contain a document. "
-            "Make sure you use xt/entity-history with :with-docs? true") ))
-
-     start-valid-time (or start-valid-time (::xt/valid-time history-item))]
+  (let [doc (doto (::xt/doc history-item)
+             (assert (str "The input history item does not contain a document. "
+                          "Make sure you use xt/entity-history with :with-docs? true")))
+        start-valid-time (or start-valid-time (::xt/valid-time history-item))]
     (->> [::xt/put doc start-valid-time end-valid-time]
          (filterv some?))))
 
