@@ -105,7 +105,7 @@ This version of the function is memoized."
     * In case of no history _item_ right before the input time, a ::xt/delete is returned
     * In case of history item right before the input time, a ::xt/put + ::xt/match is returned
 
-  The function assumes history descending ordering.
+  The function assumes history in descending order (most recent items first).
 
   The following options are passed to the generated transaction ops (i.e.: ::xt/put):
     {:start-valid-time java.util.Date
