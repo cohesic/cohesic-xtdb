@@ -1,18 +1,18 @@
-;;!zprint {:map {:hang? true :force-nl? true :key-order [:paths :deps :tasks]}}
+;;!zprint {:map {:hang? true :force-nl? true :key-order [:paths :deps :tasks] :key-value-options {:tasks {:map {:sort? true :justify? true}}}}}
 {:paths ["scripts"]
  :deps {}
  :min-bb-version "0.4.0"
- :tasks {deps {:doc "Download the project dependencies."
-               :task (clojure "-P" "-M:test")}
-         check {:doc "Check the code for problems."
-                :depends [lint-check fmt-check]}
-         lint-check {:doc "Check code linting."
+ :tasks {check      {:depends [lint-check fmt-check]
+                     :doc     "Check the code for problems."}
+         deps       {:doc  "Download the project dependencies."
+                     :task (clojure "-P" "-M:test")}
+         fmt-check  {:doc  "Check code formatting."
+                     :task (shell "scripts/format-clj.sh check")}
+         fmt-fix    {:doc  "Fix code formatting."
+                     :task (shell "scripts/format-clj.sh fix")}
+         lint-check {:doc  "Check code linting."
                      :task (shell "scripts/lint-clj.sh check")}
-         fmt-check {:doc "Check code formatting."
-                    :task (shell "scripts/format-clj.sh check")}
-         fmt-fix {:doc "Fix code formatting."
-                  :task (shell "scripts/format-clj.sh fix")}
-         test {:doc "Run the test suite."
-               :task (clojure "-M:test" "--fail-fast" "unit")}
-         test-watch {:doc "Test files while watching the file system for changes."
+         test       {:doc  "Run the test suite."
+                     :task (clojure "-M:test" "--fail-fast" "unit")}
+         test-watch {:doc  "Test files while watching the file system for changes."
                      :task (clojure "-M:test" "--fail-fast" "--watch" "unit")}}}
