@@ -1,6 +1,5 @@
 ;;!zprint {:map {:hang? true :force-nl? true :key-order [:paths :deps :tasks] :key-value-options {:tasks {:map {:sort? true :justify? true}}}}}
 {:paths ["scripts"]
- :deps {}
  :min-bb-version "0.4.0"
  :tasks {check      {:depends [lint-check fmt-check]
                      :doc     "Check the code for problems."}
@@ -13,6 +12,8 @@
          lint-check {:doc  "Check code linting."
                      :task (shell "scripts/lint-clj.sh check")}
          test       {:doc  "Run the test suite."
-                     :task (clojure "-M:test" "--fail-fast" "unit")}
+                     :task (doseq [xtdb-alias [:1.21 :1.22 :1.23]]
+                             (println "\n⬇ Testing against XTDB" (name xtdb-alias) " ⬇")
+                             (clojure (str "-M" ":test" (str xtdb-alias)) "--fail-fast" "unit"))}
          test-watch {:doc  "Test files while watching the file system for changes."
                      :task (clojure "-M:test" "--fail-fast" "--watch" "unit")}}}
