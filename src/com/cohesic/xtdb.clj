@@ -129,12 +129,10 @@ This version of the function is memoized."
 
   The :atomic? flag also adds a ::xt/match op if the current entity was present."
   [current-entity new-entity & {:keys [atomic? start-valid-time end-valid-time]}]
-  (let [entity-id (:xt/id current-entity)]
+  (let [entity-id (or (:xt/id current-entity) (:xt/id new-entity))]
     (if-not (= current-entity new-entity)
-      (let [match-op (->> [::xt/match entity-id current-entity start-valid-time]
-                          (filterv some?))
-            put-op (->> [::xt/put new-entity start-valid-time end-valid-time]
-                        (filterv some?))]
+      (let [match-op [::xt/match entity-id current-entity start-valid-time]
+            put-op [::xt/put new-entity start-valid-time end-valid-time]]
         (if atomic? [match-op put-op] [put-op]))
       [])))
 
