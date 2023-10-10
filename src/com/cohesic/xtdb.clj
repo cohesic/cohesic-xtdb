@@ -129,12 +129,12 @@ This version of the function is memoized."
 
   The :atomic? flag also adds a ::xt/match op if the current entity was present."
   [current-entity new-entity & {:keys [atomic? start-valid-time end-valid-time]}]
-  (let [entity-id (or (:xt/id current-entity) (:xt/id new-entity))]
-    (if-not (= current-entity new-entity)
-      (let [match-op [::xt/match entity-id current-entity start-valid-time]
-            put-op [::xt/put new-entity start-valid-time end-valid-time]]
-        (if atomic? [match-op put-op] [put-op]))
-      [])))
+  (if-not (= current-entity new-entity)
+    (let [entity-id (or (:xt/id current-entity) (:xt/id new-entity))
+          match-op [::xt/match entity-id current-entity start-valid-time]
+          put-op [::xt/put new-entity start-valid-time end-valid-time]]
+      (if atomic? [match-op put-op] [put-op]))
+    []))
 
 (defn reverse-tx-ops-before-time
   "Scan the entity history and return tx ops that reverse the entity right before the input time.
@@ -153,29 +153,64 @@ This version of the function is memoized."
         iterator-seq
         (reverse-history-before-time entity-id as-of-time opts))))
 
-(defn submit-matching-entity
-  "Submit a transaction with the new entity atomically.
+(defn submit-matching-entities
+  "Submit a transaction for the entities, atomically.
 
-  If the new entity coincides with the one on disk, no transaction is
-  sent over and `nil` is return.
+  Atomicity is implemented this way: if the new entity coincides with
+  the one on disk, no transaction is sent over.
 
-  Otherwise what xt/submit-tx return is returned.
+  If the entity is differs, it adds a `::xt/match` against the old one
+  before inserting. Additionally, it uses `xt/await-tx` for making sure
+  we block until a transaction is indexed.
+
+  It returns the transaction returned by `xt/submit-tx` or `nil` if
+  nothing no transaction was submitted.
 
   Shout out @emccue:
     https://clojurians.slack.com/archives/CG3AM2F7V/p1638606871304400?thread_ts=1638590188.303400&cid=CG3AM2F7V
 
-  Opts are:
+  The optional `opts` map is:
+    {:start-valid-time java.util.Date
+     :end-valid-time   java.util.Date}
+
+  Note that the same time option (i.e.: start-valid-time) is applied to
+  each entity."
+  [xtdb-node entities & {:keys [start-valid-time] :as opts}]
+  (when (seq entities)
+    (let [entity-ids (mapv :xt/id entities)
+          results (-> (xt/db xtdb-node start-valid-time)
+                      (xt/q '{:find [(pull ?e [*])] :where [[?e :xt/id ?id]] :in [[?id ...]]}
+                            entity-ids))
+          current-entity-by-id (->> results
+                                    (map first)
+                                    (group-by :xt/id))
+          opts (assoc opts :atomic? true)
+          tx-ops (into []
+                       (mapcat #(idempotent-put-ops (-> current-entity-by-id
+                                                        (get (:xt/id %))
+                                                        first)
+                                                    %
+                                                    opts))
+                       entities)]
+      (when (seq tx-ops)
+        (let [tx (xt/submit-tx xtdb-node tx-ops)]
+          (xt/await-tx xtdb-node tx)
+          tx)))))
+
+(defn submit-matching-entity
+  "Submit a transaction with the new entity atomically.
+
+  Atomicity is implemented this way: if the new entity coincides with
+  the one on disk, no transaction is sent over and `nil` is returned.
+
+  Otherwise this function returns the transaction returned by
+  `xt/submit-tx`.
+
+  Shout out @emccue:
+    https://clojurians.slack.com/archives/CG3AM2F7V/p1638606871304400?thread_ts=1638590188.303400&cid=CG3AM2F7V
+
+  The optional `opts` map is:
     {:start-valid-time java.util.Date
      :end-valid-time   java.util.Date}"
-  [xtdb-node new-entity & {:keys [start-valid-time] :as opts}]
-  (let [entity-id (:xt/id new-entity)
-        current-entity (-> (xt/db xtdb-node start-valid-time)
-                           (xt/q '{:find [(pull ?e [*])] :where [[?e :xt/id ?id]] :in [?id]}
-                                 entity-id)
-                           ffirst)
-        opts (assoc opts :atomic? true)
-        tx-ops (idempotent-put-ops current-entity new-entity opts)]
-    (when (seq tx-ops)
-      (as-> (xt/submit-tx xtdb-node tx-ops) tx
-        (xt/await-tx xtdb-node tx)
-        tx))))
+  [xtdb-node new-entity & {:as opts}]
+  (submit-matching-entities xtdb-node [new-entity] opts))

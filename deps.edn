@@ -2,7 +2,8 @@
  :deps {}
  :aliases
  {:test {:extra-paths ["test"]
-         :extra-deps {com.xtdb/xtdb-core {:mvn/version "1.23.2"}
+         :extra-deps {clojure.java-time/clojure.java-time {:mvn/version "1.3.0"}
+                      com.xtdb/xtdb-core {:mvn/version "1.23.2"}
                       lambdaisland/kaocha {:mvn/version "1.70.1086"}
                       org.slf4j/slf4j-nop {:mvn/version "1.7.36"}}
          :main-opts ["-m" "kaocha.runner"]}
@@ -13,6 +14,6 @@
                  org.slf4j/slf4j-nop {:mvn/version "1.7.36"}}
           :ns-default build}
   ;; XTDB versions to test against
-  :1.21 {:override-deps {com.xtdb/xtdb-core {:mvn/version "1.21.0"}}}
   :1.22 {:override-deps {com.xtdb/xtdb-core {:mvn/version "1.22.1"}}}
-  :1.23 {:override-deps {com.xtdb/xtdb-core {:mvn/version "1.23.2"}}}}}
+  :1.23 {:override-deps {com.xtdb/xtdb-core {:mvn/version "1.23.2"}}}
+  :1.24 {:override-deps {com.xtdb/xtdb-core {:mvn/version "1.24.1"}}}}}

@@ -12,7 +12,7 @@
          lint-check {:doc  "Check code linting."
                      :task (shell "scripts/lint-clj.sh check")}
          test       {:doc  "Run the test suite."
-                     :task (doseq [xtdb-alias [:1.21 :1.22 :1.23]]
+                     :task (doseq [xtdb-alias [:1.22 :1.23 :1.24]]
                              (println "\n⬇ Testing against XTDB" (name xtdb-alias) " ⬇")
                              (clojure (str "-M" ":test" (str xtdb-alias)) "--fail-fast" "unit"))}
          test-watch {:doc  "Test files while watching the file system for changes."
